@@ -95,7 +95,9 @@
                                 <th class="py-2 px-4 border-b">Toepassing</th>
                                 <th class="py-2 px-4 border-b">Geaccepteerd?</th>
                                 @if(auth()->user()->role === 'Ouder')
-                                <th class="py-2 px-4 border-b">Acties</th>
+                                    @if(!$gtas->geactiveerd)
+                                        <th class="py-2 px-4 border-b">Acties</th>
+                                    @endif
                                 @endif
                             </tr>
                         </thead>
@@ -127,7 +129,9 @@
                                 <td class="py-2 px-4 border-b">
                                     <form action="{{ route('screen-time-points.accept', $gtas->id) }}" method="POST" onsubmit="return confirm('Weet je zeker dat je deze schermtijdpunten wilt verwijderen?');">
                                             @csrf
-                                            <button type="submit" class="bg-green-500 hover:bg-green-700 text-white font-bold py-1 rounded">Goedkeuren</button>
+                                            @if(!$gtas->geactiveerd)
+                                                <button type="submit" class="bg-green-500 hover:bg-green-700 text-white font-bold py-1 rounded">Accepteren</button>
+                                            @endif
                                     </form>
                                 </td>
                                 @endif
@@ -179,7 +183,7 @@
                                     <form action="{{ route('screen-time-points.destroy', $stp->id) }}" method="POST" onsubmit="return confirm('Weet je zeker dat je deze schermtijdpunten wilt verwijderen?');">
                                         @csrf
                                         @method('DELETE')
-                                        <button type="submit" class="bg-red-500 hover:bg-red-700 text-white font-bold py-1 rounded">Goedkeuren</button>
+                                        <button type="submit" class="bg-red-500 hover:bg-red-700 text-white font-bold py-1 rounded">Accepteren</button>
                                     </form>
                                 </td>
                                 @endif
