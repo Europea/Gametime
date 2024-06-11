@@ -18,10 +18,10 @@ class ScreenTimePointsController extends Controller
 
         $gameTime = GameTime::where('kind_id', Auth::id())->get();
 
-        $gameTimeAsParent = DB::table('gametime')
-        ->select('gametime.*')
-        ->join('parent_child', 'gametime.kind_id', '=', 'parent_child.child_id')
-        ->where('parent_child.parent_id', '=', Auth::id())
+        $gameTimeAsParent = DB::table('gametime') // Join functie om de Schermtijd aan de ouder te kunnen laten zien.
+        ->select('gametime.*') // Hier select hij alles van GameTime
+        ->join('parent_child', 'gametime.kind_id', '=', 'parent_child.child_id') // Hier checkt hij of het parent_child.child_id gelijk staat aan de gametime.kind_id
+        ->where('parent_child.parent_id', '=', Auth::id()) // Hier checkt hij of de parent_child.parent_id gelijk staat aan de ingelogde User. Zoja, dan laat hij de Schermtijden zien van zijn kind.
         ->get();
 
         $child = auth()->user();
