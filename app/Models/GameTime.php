@@ -5,14 +5,18 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class ScreenTimePoints extends Model
+class GameTime extends Model
 {
     use HasFactory;
 
+    protected $table = 'gametime';
+
     protected $fillable = [
-        'minutes',
-        'points',
-        'parent_id',
-        'child_id'
+        'kind_id',
+        'datum',
+        'tijd',
+        'tijdafgelopen',
+        'geactiveerd',
+        'toepassing'
     ];
 }

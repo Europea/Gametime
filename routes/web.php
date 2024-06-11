@@ -26,7 +26,8 @@ Route::middleware('auth')->group(function () {
 Route::middleware('auth')->group(function () {
     Route::get('screen-time-points', [ScreenTimePointsController::class, 'index'])->name('screen-time-points.index');
     Route::post('screen-time-points', [ScreenTimePointsController::class, 'store'])->name('screen-time-points.store');
-    Route::post('screen-time-points', [ScreenTimePointsController::class, 'verzilveren'])->name('screen-time-points.verzilveren');
+    Route::post('screen-time-points/verzilver/{id}', [ScreenTimePointsController::class, 'verzilveren'])->name('screen-time-points.verzilveren');
+    Route::post('screen-time-points/accept/{id}', [ScreenTimePointsController::class, 'AcceptGameTime'])->name('screen-time-points.accept');
     Route::delete('screen-time-points/{id}', [ScreenTimePointsController::class, 'destroy'])->name('screen-time-points.destroy');
 });
 

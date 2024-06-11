@@ -43,8 +43,8 @@ class TaskController extends Controller
 
     public function create()
     {
-        $children = Auth::user()->children;
-    
+        $children =h::user()->children;
+     Aut
         if (Auth::user()->role !== 'Ouder') {
             return redirect()->route('tasks.index')->with('error', 'Je hebt geen toestemming om taken toe te voegen of er zijn geen kinderen gekoppeld aan jouw account.');
         }

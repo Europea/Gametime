@@ -11,13 +11,8 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('gametime', function (Blueprint $table) {
-            $table->increments('idgametime');
-            $table->dateTime('datum');
-            $table->time('tijd');
-            $table->integer('kosten');
-            $table->tinyInteger('geblokt');
-            $table->timestamps();
+        Schema::table('gametime', function (Blueprint $table) {
+            $table->string('toepassing', 45);
         });
     }
 
@@ -26,6 +21,8 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('gametime');
+        Schema::table('gametime', function (Blueprint $table) {
+            //
+        });
     }
 };

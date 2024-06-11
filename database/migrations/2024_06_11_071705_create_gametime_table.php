@@ -15,6 +15,7 @@ return new class extends Migration
             $table->id();
             $table->date('datum');
             $table->time('tijd');
+            $table->tinyInteger('geactiveerd');
             $table->unsignedBigInteger('kind_id');
             $table->foreign('kind_id')->references('id')->on('users')->onDelete('cascade');
             $table->timestamps();
