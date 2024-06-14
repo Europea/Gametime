@@ -96,7 +96,7 @@ class ScreenTimePointsController extends Controller
         return redirect()->route('screen-time-points.index')->with('success', 'Schermtijd succesvol verzilverd.');
     }
 
-    protected function getChildByParentId($parentId)
+    protected function getChildByParentId($parentId) // Hiermee checkt hij het kind van de Ouder.
     {
 
         
