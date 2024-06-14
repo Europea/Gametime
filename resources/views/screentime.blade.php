@@ -30,7 +30,7 @@
                     <label for="points" class="block text-gray-700 font-medium mb-2">Punten</label>
                     <input type="number" name="points" class="form-control w-full border border-gray-300 p-2 rounded" id="points" required>
                 </div>
-                <button type="submit" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">Toevoegen</button>
+                <button type="submit" class="bg-blue-500 hover:bg-blue-700 text-black font-bold py-2 rounded">Toevoegen</button>
             </form>
         @endif
 

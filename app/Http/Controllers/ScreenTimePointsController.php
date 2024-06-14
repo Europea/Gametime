@@ -8,45 +8,45 @@ use App\Models\User;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use App\Models\GameTime;
-use Carbon\Carbon;
+use Carbon\Carbon; // Haalt carbon op
 
 class ScreenTimePointsController extends Controller
 {
     public function index()
     {
-        $currentDateTime = Carbon::now()->format('Y-m-d');
-        $nextDateTime = Carbon::now()->addWeek()->format('Y-m-d');
+        $currentDateTime = Carbon::now()->format('Y-m-d'); // Pakt de tijd van nu en zet het in het formaat (2024-06-20)
+        $nextDateTime = Carbon::now()->addWeek()->format('Y-m-d'); // Pakt de tijd van nu en voegt er een extra week bij. 
     
-        $screenTimePoints = ScreenTimePoints::where('parent_id', Auth::id())->orWhere('child_id', Auth::id())->get();
+        $screenTimePoints = ScreenTimePoints::where('parent_id', Auth::id())->orWhere('child_id', Auth::id())->get(); // Checkt de child_id en de parent_id en checkt welke jij bennt.
     
-        $gameTime = GameTime::where('kind_id', Auth::id())->get();
+        $gameTime = GameTime::where('kind_id', Auth::id())->get(); 
     
-        $gameTimeAsParent = DB::table('gametime')
+        $gameTimeAsParent = DB::table('gametime') // Pakt alles uit de schermtijd app en checkt of jij de ouder bent van een kind.
             ->select('gametime.*')
             ->whereBetween('gametime.datum', [$currentDateTime, $nextDateTime])
             ->join('parent_child', 'gametime.kind_id', '=', 'parent_child.child_id')
             ->where('parent_child.parent_id', '=', Auth::id())
             ->get();
     
-        $ontwikkeling = DB::table('gametime')
+        $ontwikkeling = DB::table('gametime') // Checkt alle schermtijden en checkt of hij geactiveerd is.
             ->select('gametime.*')
             ->whereBetween('gametime.datum', [$currentDateTime, $nextDateTime])
             ->where('geactiveerd', '=', '1')
             ->get();
     
-        $totalMinutesPerChild = [];
+        $totalMinutesPerChild = []; // Maakt een soort array aan.
     
-        foreach ($ontwikkeling as $entry) {
-            $tijd = Carbon::parse($entry->tijd);
-            $tijdafgelopen = Carbon::parse($entry->tijdafgelopen);
+        foreach ($ontwikkeling as $entry) { // Checkt door elke Tabel heen
+            $tijd = Carbon::parse($entry->tijd); // Pakt de tijd uit de DB
+            $tijdafgelopen = Carbon::parse($entry->tijdafgelopen); // Pakt de tijdafgelopen uit de DB
     
-            $duration = $tijd->diffInMinutes($tijdafgelopen);
+            $duration = $tijd->diffInMinutes($tijdafgelopen); // Haalt de tijd van de tijdafgelopen af en checkt hoeveel het verschil is.
     
-            if (!isset($totalMinutesPerChild[$entry->kind_id])) {
-                $totalMinutesPerChild[$entry->kind_id] = 0;
+            if (!isset($totalMinutesPerChild[$entry->kind_id])) { // Als het kind_id nog niet in de $totalMinutesPerChild[] zit doet ie het volgende.
+                $totalMinutesPerChild[$entry->kind_id] = 0; // Zet de tijd naar 0
             }
     
-            $totalMinutesPerChild[$entry->kind_id] += $duration;
+            $totalMinutesPerChild[$entry->kind_id] += $duration; // Hier voegt hij de echte tijd erbij 
         }
     
         return view('screentime', compact('screenTimePoints', 'gameTime', 'gameTimeAsParent', 'totalMinutesPerChild'));
@@ -148,13 +148,9 @@ class ScreenTimePointsController extends Controller
     }
 
     public function AcceptGameTime($id) {
-
-    $updateDetails = GameTime::where('id', "=", $id)->first(); // Hiermee pakt hij de taak met het id wat opgegeven word.
-
-    $updateDetails->geactiveerd = '1'; // Hiermee zet hij de taak op geaccepteerd
-
-    $updateDetails->save(); // Hiermee slaat hij de gametime op.
-
+        $updateDetails = GameTime::where('id', "=", $id)->first(); // Hiermee pakt hij de taak met het id wat opgegeven word.
+        $updateDetails->geactiveerd = '1'; // Hiermee zet hij de taak op geaccepteerd
+        $updateDetails->save(); // Hiermee slaat hij de gametime op.
     }
     
 }
