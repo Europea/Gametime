@@ -19,4 +19,5 @@ class GameTime extends Model
         'geactiveerd',
         'toepassing'
     ];
+
 }

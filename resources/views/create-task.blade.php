@@ -26,7 +26,7 @@
                         </div>
                         <div class="mb-4">
                             <label for="kind_id" class="block text-gray-700 dark:text-gray-300 font-bold mb-2">Selecteer een kind</label>
-                            <select name="kind_id" id="kind_id" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline dark:bg-gray-700 dark:text-gray-200">
+                            <select name="kind_id" id="kind_id" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline dark:bg-gray-700 dark:text-gray-200"  required>
                                 <option value="">Selecteer een kind</option>
                                 @foreach($children as $child)
                                     <option value="{{ $child->id }}">{{ $child->name }}</option>

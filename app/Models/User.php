@@ -57,9 +57,6 @@ class User extends Authenticatable
         return $this->belongsToMany(User::class, 'parent_child', 'parent_id', 'child_id');
     }
 
-    /**
-     * The parents that belong to the child.
-     */
     public function parents()
     {
         return $this->belongsToMany(User::class, 'parent_child', 'child_id', 'parent_id');
@@ -67,7 +64,7 @@ class User extends Authenticatable
 
     public function relatedUsers()
     {
-        return $this->belongsToMany(User::class, 'user_relations', 'related_user_id', 'user_id');
+        return $this->belongsToMany(User::class, 'user_relations', 'user_id', 'related_user_id');
     }
 
     public function childrenTasks()

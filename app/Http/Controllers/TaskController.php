@@ -43,10 +43,10 @@ class TaskController extends Controller
 
     public function create()
     {
-        $children =h::user()->children;
+        $children = Auth::user()->children;
      
         if (Auth::user()->role !== 'Ouder') {
-            return redirect()->route('tasks.index')->with('error', 'Je hebt geen toestemming om taken toe te voegen of er zijn geen kinderen gekoppeld aan jouw account.');
+            return redirect()->route('tasks.index')->with('message', 'Je hebt geen toestemming om taken toe te voegen of er zijn geen kinderen gekoppeld aan jouw account.');
         }
     
         $relatedUsers = Auth::user()->relatedUsers()->get();
@@ -62,13 +62,13 @@ class TaskController extends Controller
     public function store(Request $request)
     {
         if (Auth::user()->role !== 'Ouder') {
-            return redirect()->route('tasks.index')->with('error', 'Je hebt geen toestemming om taken toe te voegen.');
+            return redirect()->route('tasks.index')->with('message', 'Je hebt geen toestemming om taken toe te voegen.');
         }
     
         $child = $this->getChildByParentId(Auth::id());
     
         if (!$child) {
-            return redirect()->route('tasks.index')->with('error', 'Het kind van de ouder kon niet worden gevonden.');
+            return redirect()->route('tasks.index')->with('message', 'Het kind van de ouder kon niet worden gevonden.');
         }
 
 
@@ -94,18 +94,24 @@ class TaskController extends Controller
 
     public function edit($id)
     {
+
+        $children = Auth::user()->children;
+
         $task = Task::where('idtaak', $id)
                     ->where('controller_idcontroller', Auth::id())
                     ->firstOrFail();
-        return view('edit-task', compact('task'));
+        return view('edit-task', compact('task', 'children'));
+
     }
 
     public function update(Request $request, Task $task)
     {
         if ($task->controller_idcontroller !== Auth::id()) {
-            return redirect()->route('tasks.index')->with('error', 'Je hebt geen toestemming om deze taak bij te werken.');
+            return redirect()->route('tasks.index')->with('message', 'Je hebt geen toestemming om deze taak bij te werken.');
         }
     
+        $children = Auth::user()->children;
+
         if (!$task->voltooid && $request->has('voltooid') && $request->voltooid) {
             $child = User::find($task->kind_id);
             $child->points += $task->waardepunten;
@@ -113,7 +119,7 @@ class TaskController extends Controller
 
             $task->delete();
 
-            return redirect()->route('tasks.index')->with('success', 'Taak voltooid en verwijderd.');
+            return redirect()->route('tasks.index')->with('message', 'Taak voltooid en verwijderd.');
 
         }
     
@@ -130,7 +136,7 @@ class TaskController extends Controller
     
         if ($parentChild) {
             $child = User::find($parentChild->child_id);
-    
+
             return $child;
         } else {
             return null;

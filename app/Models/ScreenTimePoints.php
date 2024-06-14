@@ -15,4 +15,5 @@ class ScreenTimePoints extends Model
         'parent_id',
         'child_id'
     ];
+
 }

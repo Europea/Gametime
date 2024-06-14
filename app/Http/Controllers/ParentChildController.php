@@ -20,16 +20,22 @@ class ParentChildController extends Controller
             'email' => 'required|email|exists:users,email,role,Kind'
         ]);
     
-        $child = User::where('email', $request->email)->first();
-    
-        
-        if (!auth()->user()->children->contains($child)) {
+        $email = $request->input('email');
 
-            auth()->user()->children()->save($child);
-            
-            return redirect()->back()->with('success', 'Kind succesvol toegevoegd!');
-        } else {
-            return redirect()->back()->with('error', 'Kind is al aan de ouder gekoppeld!');
+
+        $child = User::where('email', $email)->first();
+    
+        if($child) {
+            if (!auth()->user()->children->contains($child)) {
+
+                auth()->user()->children()->save($child);
+
+                return redirect()->route('tasks.index')->with('message', 'Kind succesvol toegevoegd!');
+            }else{
+                return redirect()->route('tasks.index')->with('message', 'Kind is al aan de ouder gekoppeld!');
+            }
+        }else{
+            return redirect()->route('tasks.index')->with('message', 'Email bestaat niet!');
         }
     }
 }    

@@ -11,6 +11,12 @@
             @endif
         @endif
 
+        @if (session('message'))
+            <div class="bg-white dark:bg-gray-700 p-4 rounded-lg shadow-md mb-4 w-full mx-auto text-black" style="max-width: 500px;">
+                <div class="alert">{{ session('message') }}</div>
+            </div>
+        @endif
+
         @if(auth()->user()->role === 'Ouder')
             <h1 class="text-2xl font-semibold text-center mb-6">Schermtijdpunten Beheren</h1>
 
@@ -57,11 +63,11 @@
                                             <input type="date" name="datum" id="datum" required min="{{date('Y-m-d')}}" placeholder="Datum" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline dark:bg-gray-700 dark:text-gray-200">
                                         </td>
                                         <td class="py-2 px-4 border-b 2">
-                                            <input type="time" name="time" id="time" placeholder="Time" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline dark:bg-gray-700 dark:text-gray-200">
+                                            <input type="time" name="time" id="time" required placeholder="Time" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline dark:bg-gray-700 dark:text-gray-200">
 
                                         </td>
                                         <td class="py-2 px-4 border-b 4">
-                                            <input type="text" name="toepassing" id="toepassing" placeholder="Toepassing" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline dark:bg-gray-700 dark:text-gray-200">
+                                            <input type="text" name="toepassing" id="toepassing"  required placeholder="Toepassing" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline dark:bg-gray-700 dark:text-gray-200">
                                         </td>
                                     @endif
                                         @if(auth()->user()->role === 'Kind')
@@ -85,6 +91,7 @@
                     </table>
                     <h1 class="py-4">Verzilverde tijd</h>
                     @foreach($gameTimeAsParent as $gtas)
+
                     <table class="min-w-full bg-white border border-gray-200">
                         <thead>
                             <tr>
@@ -93,6 +100,7 @@
                                 <th class="py-2 px-4 border-b">Tijd</th>
                                 <th class="py-2 px-4 border-b">Aantal Minuten</th>
                                 <th class="py-2 px-4 border-b">Toepassing</th>
+                                <th class="py-2 px-4 border-b">Kind</th>
                                 <th class="py-2 px-4 border-b">Geaccepteerd?</th>
                                 @if(auth()->user()->role === 'Ouder')
                                     @if(!$gtas->geactiveerd)
@@ -117,6 +125,9 @@
                                 </td>
                                 <td class="py-2 px-4 border-b">
                                  {{ $gtas->toepassing }}
+                                </td>
+                                <td class="py-2 px-4 border-b">
+                                 {{ App\Models\User::find($gtas->kind_id)->name }}
                                 </td>
                                 <td class="py-2 px-4 border-b">
                                     @if($gtas->geactiveerd)
@@ -194,5 +205,29 @@
                 </div>
             </div>
         </div>
+        <h2 class="text-xl font-semibold mt-8 mb-4 text-center">Huidige Schermtijdpunten</h2>
+        <div class="w-full flex justify-center">
+            <div class="w-full max-w-3xl bg-white p-6 rounded shadow-md mx-auto">
+                <div class="overflow-x-auto">
+                <table class="min-w-full bg-white border border-gray-200">
+                    <thead>
+                        <tr>
+                            <th class="py-2 px-4 border-b">Kind</th>
+                            <th class="py-2 px-4 border-b">Aantal minuten:</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            @foreach($totalMinutesPerChild as $kind_id => $minutes)
+                                <td>{{ App\Models\User::find($kind_id)->name }}</td>
+                                <td> {{ $minutes }} minuten </td>
+                            @endforeach     
+                        </tr>
+                    </tbody>
+                </table>
+                </div>
+            </div>
+        </div>
     </div>
+    
 </x-app-layout>

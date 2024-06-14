@@ -8,26 +8,48 @@ use App\Models\User;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use App\Models\GameTime;
+use Carbon\Carbon;
 
 class ScreenTimePointsController extends Controller
 {
     public function index()
     {
-        // Haal de schermtijdpunten op voor de ingelogde ouder op of van het kind zelf.
+        $currentDateTime = Carbon::now()->format('Y-m-d');
+        $nextDateTime = Carbon::now()->addWeek()->format('Y-m-d');
+    
         $screenTimePoints = ScreenTimePoints::where('parent_id', Auth::id())->orWhere('child_id', Auth::id())->get();
-
+    
         $gameTime = GameTime::where('kind_id', Auth::id())->get();
-
-        $gameTimeAsParent = DB::table('gametime') // Join functie om de Schermtijd aan de ouder te kunnen laten zien.
-        ->select('gametime.*') // Hier select hij alles van GameTime
-        ->join('parent_child', 'gametime.kind_id', '=', 'parent_child.child_id') // Hier checkt hij of het parent_child.child_id gelijk staat aan de gametime.kind_id
-        ->where('parent_child.parent_id', '=', Auth::id()) // Hier checkt hij of de parent_child.parent_id gelijk staat aan de ingelogde User. Zoja, dan laat hij de Schermtijden zien van zijn kind.
-        ->get();
-
-        $child = auth()->user();
-
-
-        return view('screentime', compact('screenTimePoints', 'gameTime', 'gameTimeAsParent', 'child'));
+    
+        $gameTimeAsParent = DB::table('gametime')
+            ->select('gametime.*')
+            ->whereBetween('gametime.datum', [$currentDateTime, $nextDateTime])
+            ->join('parent_child', 'gametime.kind_id', '=', 'parent_child.child_id')
+            ->where('parent_child.parent_id', '=', Auth::id())
+            ->get();
+    
+        $ontwikkeling = DB::table('gametime')
+            ->select('gametime.*')
+            ->whereBetween('gametime.datum', [$currentDateTime, $nextDateTime])
+            ->where('geactiveerd', '=', '1')
+            ->get();
+    
+        $totalMinutesPerChild = [];
+    
+        foreach ($ontwikkeling as $entry) {
+            $tijd = Carbon::parse($entry->tijd);
+            $tijdafgelopen = Carbon::parse($entry->tijdafgelopen);
+    
+            $duration = $tijd->diffInMinutes($tijdafgelopen);
+    
+            if (!isset($totalMinutesPerChild[$entry->kind_id])) {
+                $totalMinutesPerChild[$entry->kind_id] = 0;
+            }
+    
+            $totalMinutesPerChild[$entry->kind_id] += $duration;
+        }
+    
+        return view('screentime', compact('screenTimePoints', 'gameTime', 'gameTimeAsParent', 'totalMinutesPerChild'));
     }
 
     public function store(Request $request)
@@ -37,14 +59,21 @@ class ScreenTimePointsController extends Controller
             'points' => 'required|integer',
         ]);
 
-        ScreenTimePoints::create([
+        $child = $this->getChildByParentId(Auth::id());
+
+
+        if (!$child) {
+            return redirect()->route('tasks.index')->with('message', 'Het kind van de ouder kon niet worden gevonden.');
+        }
+
+        $gtas = ScreenTimePoints::create([
             'minutes' => $request->minutes,
             'points' => $request->points,
             'parent_id' => Auth::id(),
-            'child_id' => $this->getChildByParentId(Auth::id()),
+            'child_id' => $child,
         ]);
 
-        return redirect()->route('screen-time-points.index')->with('success', 'Schermtijdpunten succesvol toegevoegd.');
+        return redirect()->route('screen-time-points.index')->with('message', 'Schermtijdpunten succesvol toegevoegd.');
     }
 
     public function destroy($id)
@@ -52,12 +81,12 @@ class ScreenTimePointsController extends Controller
         $screenTimePoints = ScreenTimePoints::findOrFail($id);
 
         if ($screenTimePoints->parent_id !== Auth::id()) {
-            return redirect()->route('screentime')->with('error', 'Je hebt geen toestemming om deze schermtijdpunten te verwijderen.');
+            return redirect()->route('screentime')->with('message', 'Je hebt geen toestemming om deze schermtijdpunten te verwijderen.');
         }
 
         $screenTimePoints->delete();
 
-        return redirect()->route('screen-time-points.index')->with('success', 'Schermtijdpunten succesvol verwijderd.');
+        return redirect()->route('screen-time-points.index')->with('message', 'Schermtijdpunten succesvol verwijderd.');
     }
 
     public function verzilveren(Request $request, $id) {
@@ -70,7 +99,10 @@ class ScreenTimePointsController extends Controller
             $request->validate([
                 'datum' => 'required|date',
                 'time' => 'date_format:H:i',
+                'toepassing' => 'required|max:255',
             ]);
+
+
 
             $selectedTime = $request->time;
 
@@ -108,6 +140,8 @@ class ScreenTimePointsController extends Controller
             $child = User::find($parentChild->child_id);
     
             return $child->id;
+
+    
         } else {
             return null;
         }

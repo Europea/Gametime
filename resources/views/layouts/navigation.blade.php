@@ -58,6 +58,10 @@
                             {{ __('Profile') }}
                         </x-dropdown-link>
 
+                        <x-dropdown-link>
+                            <button onclick="myFunction()">Toggle dark mode</button>
+                        </x-dropdown-link>
+
                         <!-- Authentication -->
                         <form method="POST" action="{{ route('logout') }}">
                             @csrf

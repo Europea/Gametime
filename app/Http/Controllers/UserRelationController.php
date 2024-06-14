@@ -2,8 +2,11 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\UserRelation;
 use Illuminate\Http\Request;
-use App\Models\User; // Voeg de import toe voor de User-klasse
+use App\Models\User;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 
 class UserRelationController extends Controller
 {
@@ -28,11 +31,15 @@ class UserRelationController extends Controller
 
         if ($medegebruiker) {
 
-            auth()->user()->relatedUsers()->attach($medegebruiker->id);
-            return redirect()->route('tasks.index')->with('success', 'Medegebruiker succesvol toegevoegd!');
-        } else {
 
-            return redirect()->back()->with('error', 'Geen gebruiker gevonden met dit e-mailadres.');
+            UserRelation::create([
+                'user_id' => Auth::id(),
+                'related_user_id' => $medegebruiker->id,
+            ]);
+
+            return redirect()->route('tasks.index')->with('message', 'Medegebruiker succesvol toegevoegd!');
+        } else {
+            return redirect()->route('tasks.index')->with('message', 'Error: Gebruiker niet gevonden met dit E-mailadress!');
         }
     }
 }

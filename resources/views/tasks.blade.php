@@ -20,6 +20,12 @@
 
                     </div>
 
+                    @if (session('message'))
+                        <div class="bg-white dark:bg-gray-700 p-4 rounded-lg shadow-md mb-4 w-full mx-auto text-black" style="max-width: 500px;">
+                            <div class="alert">{{ session('message') }}</div>
+                        </div>
+                    @endif
+
                     <h2 class="text-xl font-semibold mt-4">Taken</h2>
                     <div class="flex flex-col items-center gap-6 mt-4">
                     @foreach($tasksAsMedegebruiker as $task)
@@ -27,6 +33,7 @@
                                 <div class="bg-white dark:bg-gray-700 p-4 rounded-lg shadow-md mb-4 relative">
                                     <h3 class="text-lg font-bold">Taak #{{ $loop->iteration }} | {{ $task->omschrijving }}</h3>                                    <p>Waardepunten: {{ $task->waardepunten }}</p>
                                     <p>Datum: {{ $task->datum }}</p>
+                                    <p>Kind: {{ App\Models\User::find($task->kind_id)->name }} </p>
                                     <div class="task-status {{ $task->voltooid ? 'bg-green-500' : 'bg-red-500' }}">
                                         Status: 
                                         @if($task->voltooid)

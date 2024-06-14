@@ -31,6 +31,18 @@
                             <label for="datum" class="block text-gray-700 dark:text-gray-300 font-bold mb-2">Datum</label>
                             <input type="date" name="datum" id="datum" value="{{ $task->datum }}" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline dark:bg-gray-700 dark:text-gray-200">
                         </div>
+                        
+
+                        <div class="mb-4">
+                                <label for="kind" class="block text-gray-700 dark:text-gray-300 font-bold mb-2">Gekoppelde kind:</label>
+                                <select name="kind_id" id="kind_id" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline dark:bg-gray-700 dark:text-gray-200">
+                                @foreach($children as $child)
+                                    <option value="{{ $child->id }}">{{ $child->name }}</option>
+                                @endforeach
+                            </select>
+                        </div>
+
+
                         <div class="mb-4">
                             <label for="voltooid" class="block text-gray-700 dark:text-gray-300 font-bold mb-2">Voltooid</label>
                             <input type="checkbox" name="voltooid" id="voltooid" value="1" {{ $task->voltooid ? 'checked' : '' }} class="shadow appearance-none border rounded text-gray-700 leading-tight focus:outline-none focus:shadow-outline dark:bg-gray-700 dark:text-gray-200">
